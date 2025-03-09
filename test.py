@@ -1,11 +1,14 @@
 
-import torchvision.models as models
+
 import torchvision.transforms as transforms
+import torch
 from PIL import Image
-from src.dataset import TrainDatasets
+from src.dataset import TrainDatasets, TestDatasets
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
-from src.utils import transform
+from src.utils import transform, loss_fn
+from src.model import Model
+import os
 # model = models.resnet18()
 # print(model)
 
@@ -41,15 +44,37 @@ def show_tensor_image(tensor):
 
     plt.imshow(tensor)  # Tensor 轉 NumPy
     plt.axis("off")
+    plt.show()
+
+
+train = {}
+dir = os.scandir("data/train")
+for d in dir:
+    if d.is_dir():
+        train[d.name] = len(os.listdir(d)) / 19824
+val = {}
+dir = os.scandir("data/val")
+for d in dir:
+    if d.is_dir():
+        val[d.name] = len(os.listdir(d)) / 300
+
+print(train)
+print(val)
+# print("load dataset")
+# trainDataset = TestDatasets("data/test", transform=transform)
+# print("print dataset len")
+# print(trainDataset.__len__())
+# train_loader = DataLoader(trainDataset, batch_size=1, shuffle=False)
 
 
 
 
-
-print("load dataset")
-trainDataset = TrainDatasets("data/train", transform=transform)
-print("print dataset len")
-print(trainDataset.__len__())
-train_loader = DataLoader(trainDataset, batch_size=1, shuffle=False)
-
-
+# model = Model()
+# model.eval()
+# count = 0
+# for image , path in train_loader:
+#     #image = image.unsqueeze(0)
+#     show_tensor_image(image[0])
+#     count += 1
+#     if count > 10:
+#         break

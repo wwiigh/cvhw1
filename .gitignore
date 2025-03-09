@@ -1,3 +1,5 @@
 data/
-
+logs/
+model/
+prediction/
 hw1-data.tar.gz
