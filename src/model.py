@@ -43,7 +43,7 @@ class Model100UpDate(nn.Module):
             nn.Linear(512, 512),
             nn.BatchNorm1d(512),
             nn.ReLU(),
-            #nn.Dropout(0.3),
+            nn.Dropout(0.4),
             nn.Linear(512, 256),
             nn.BatchNorm1d(256),
             nn.ReLU(),
@@ -63,9 +63,14 @@ class Model34(nn.Module):
         self.model = models.resnet34()
         self.model.fc = nn.Identity()
         self.fc = nn.Sequential(
-            nn.Linear(512, 256),
+            nn.Linear(512, 512),
+            nn.BatchNorm1d(512),
             nn.ReLU(),
-            nn.Dropout(0.5), 
+            nn.Dropout(0.4),
+            nn.Linear(512, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.4),
             nn.Linear(256, 100)
         )
 
@@ -77,13 +82,22 @@ class Model34(nn.Module):
 class Model50(nn.Module):
     def __init__(self):
         super().__init__()
-        self.model = models.resnet50()
+        self.model = models.resnet50(weights="IMAGENET1K_V2")
         self.model.fc = nn.Identity()
         self.fc = nn.Sequential(
             nn.Linear(2048, 1024),
+            nn.BatchNorm1d(1024),
             nn.ReLU(),
-            nn.Dropout(0.2), 
-            nn.Linear(1024, 100)
+            #nn.Dropout(0.4),
+            nn.Linear(1024, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(),
+            #nn.Dropout(0.4),
+            nn.Linear(512, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.4),
+            nn.Linear(256, 100)
         )
 
     def forward(self, x):

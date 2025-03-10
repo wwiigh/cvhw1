@@ -25,7 +25,7 @@ def mixup_data(x, y, alpha=1.0):
     return mixed_x, mixed_y
 
 def train():
-    expdir = "exp40"
+    expdir = "exp46"
     if not os.path.exists(f"model/{expdir}"):
         os.makedirs(f"model/{expdir}")
 
@@ -50,7 +50,7 @@ def train():
     train_dataloader = get_train_dataloader(traindir, transform=transform, batch_size=batch_size, shuffle=True)
     val_dataloader = get_val_dataloader(valdir, transform=transform_val, batch_size=1, shuffle=True)
 
-    model = get_model100Update().to(device)
+    model = get_model50().to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, mode="min", factor=0.5, patience=5)
     
@@ -120,7 +120,7 @@ def train():
     torch.save(model.state_dict(), f"model/{expdir}/{expdir}_final_model.pth")
     
 def traincheckpoint():
-    expdir = "exp38"
+    expdir = "exp43"
     if not os.path.exists(f"model/{expdir}"):
         os.makedirs(f"model/{expdir}")
     writer = SummaryWriter(f"logs/{expdir}")
@@ -129,9 +129,9 @@ def traincheckpoint():
     print("device:",device)
 
     batch_size = 64
-    epochs = 35
+    epochs = 10
     learning_rate = 0.0001
-    weight_decay=5e-4
+    weight_decay=1e-3
     setp_size = 10
     gamma = 0.5
 
@@ -143,7 +143,7 @@ def traincheckpoint():
     val_dataloader = get_val_dataloader(valdir, transform=transform_val, batch_size=1, shuffle=True)
 
     model = get_model100Update().to(device)
-    checkpoint = torch.load("model/exp36/exp36_63.pth")
+    checkpoint = torch.load("model/exp42/exp42_69.pth")
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -170,7 +170,7 @@ def traincheckpoint():
             output = model(image)
             predictions = output.argmax(dim=1)
             correct += (predictions == label).sum().item()
-            loss = loss_fn(output, label)
+            loss = combined_loss(output, label)
             loss.backward()
             optimizer.step()
 

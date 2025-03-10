@@ -17,15 +17,15 @@ class FocalLoss(nn.Module):
         return focal_loss.mean()
     
 transform = transforms.Compose([
-            transforms.RandomResizedCrop(224, scale=(0.5, 1.0)) ,
+            transforms.RandomResizedCrop(224, scale=(0.6, 1.0)) ,
             transforms.RandomHorizontalFlip(p=0.5),
-            #transforms.RandomVerticalFlip(p=0.5),
-            transforms.RandomAffine(degrees=15, translate=(0.1, 0.1), scale=(0.95, 1.05)),
+            transforms.RandomVerticalFlip(p=0.2),
+            transforms.RandomApply([transforms.RandomAffine(degrees=15, translate=(0.1, 0.1), scale=(0.95, 1.05))], p=0.4),
             #transforms.CenterCrop(224), 
             #transforms.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1), 
-            transforms.ColorJitter(brightness=0.2, contrast=0.2), 
-            transforms.RandomGrayscale(p=0.1),
-            transforms.GaussianBlur(kernel_size=3, sigma=(0.2, 1.2)),
+            transforms.RandomApply([transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1)],p=0.4), 
+            #transforms.RandomGrayscale(p=0.05),
+            transforms.RandomApply([transforms.GaussianBlur(kernel_size=3, sigma=(0.3, 1.5))],p=0.4),
             #transforms.GaussianBlur(kernel_size=3, sigma=(0.01, 1.5)),
             
             transforms.ToTensor(),
