@@ -25,7 +25,7 @@ def mixup_data(x, y, alpha=1.0):
     return mixed_x, mixed_y
 
 def train():
-    expdir = "exp46"
+    expdir = "exp47"
     if not os.path.exists(f"model/{expdir}"):
         os.makedirs(f"model/{expdir}")
 
@@ -52,7 +52,7 @@ def train():
 
     model = get_model50().to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, mode="min", factor=0.5, patience=5)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, mode="min", factor=0.5, patience=3)
     
 
     bestcorrect = 0
