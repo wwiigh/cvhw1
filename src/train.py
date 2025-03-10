@@ -4,8 +4,8 @@ import torch.optim as optim
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 from dataset import get_train_dataloader, get_test_dataloader, get_val_dataloader
-from utils import loss_fn, transform, transform_val, val_loss_fn
-from model import get_model, get_model100, get_model34, get_model50
+from utils import combined_loss, transform, transform_val, val_loss_fn
+from model import get_model, get_model100, get_model34, get_model50, get_model100Update
 from torchvision.transforms.functional import to_tensor
 import numpy as np
 import os
@@ -25,7 +25,7 @@ def mixup_data(x, y, alpha=1.0):
     return mixed_x, mixed_y
 
 def train():
-    expdir = "exp29"
+    expdir = "exp40"
     if not os.path.exists(f"model/{expdir}"):
         os.makedirs(f"model/{expdir}")
 
@@ -39,7 +39,7 @@ def train():
     epochs = 70
     learning_rate = 0.001
     weight_decay=5e-4
-    setp_size = 20
+    setp_size = 10
     T_max = 100
     gamma = 0.8
 
@@ -50,9 +50,9 @@ def train():
     train_dataloader = get_train_dataloader(traindir, transform=transform, batch_size=batch_size, shuffle=True)
     val_dataloader = get_val_dataloader(valdir, transform=transform_val, batch_size=1, shuffle=True)
 
-    model = get_model100().to(device)
+    model = get_model100Update().to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=setp_size, gamma=gamma)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, mode="min", factor=0.5, patience=5)
     
 
     bestcorrect = 0
@@ -71,7 +71,7 @@ def train():
             output = model(image)
             predictions = output.argmax(dim=1)
             correct += (predictions == label).sum().item()
-            loss = loss_fn(output, label)
+            loss = combined_loss(output, label)
             loss.backward()
             optimizer.step()
 
@@ -106,7 +106,7 @@ def train():
 
         print(f"Epoch [{epoch+1}/{epochs}], Val Loss: {valloss/len(val_dataloader):.4f}")
 
-        scheduler.step()
+        scheduler.step(valloss/len(val_dataloader))
         current_lr = scheduler.get_last_lr()[0]
         print(f"Learning Rate: {current_lr:.6f}")
 
@@ -120,7 +120,7 @@ def train():
     torch.save(model.state_dict(), f"model/{expdir}/{expdir}_final_model.pth")
     
 def traincheckpoint():
-    expdir = "exp30"
+    expdir = "exp38"
     if not os.path.exists(f"model/{expdir}"):
         os.makedirs(f"model/{expdir}")
     writer = SummaryWriter(f"logs/{expdir}")
@@ -129,9 +129,9 @@ def traincheckpoint():
     print("device:",device)
 
     batch_size = 64
-    epochs = 50
-    learning_rate = 0.001
-    weight_decay=0.1
+    epochs = 35
+    learning_rate = 0.0001
+    weight_decay=5e-4
     setp_size = 10
     gamma = 0.5
 
@@ -142,13 +142,13 @@ def traincheckpoint():
     train_dataloader = get_train_dataloader(traindir, transform=transform, batch_size=batch_size, shuffle=True)
     val_dataloader = get_val_dataloader(valdir, transform=transform_val, batch_size=1, shuffle=True)
 
-    model = get_model100().to(device)
-    checkpoint = torch.load("model/exp29/exp29_68.pth")
+    model = get_model100Update().to(device)
+    checkpoint = torch.load("model/exp36/exp36_63.pth")
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=gamma)
-    #scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=setp_size, gamma=gamma)
+    scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
     #sscheduler.step_size = 15
     print("check setting")
     print(f"Current learning rate: {optimizer.param_groups[0]['lr']}")
@@ -219,4 +219,4 @@ def traincheckpoint():
     torch.save(model.state_dict(), f"model/{expdir}/{expdir}_final_model.pth")
 
 if __name__ == "__main__":
-    traincheckpoint()
+    train()

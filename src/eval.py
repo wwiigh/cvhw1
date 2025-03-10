@@ -1,12 +1,13 @@
 import torch
 from tqdm import tqdm
-from model import get_model,get_model34
+from model import get_model,get_model34, get_model100Update
 from dataset import get_train_dataloader, get_test_dataloader, get_val_dataloader
-from utils import loss_fn, transform_val
+from utils import  transform_val
+from collections import Counter
 
 def val(path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = get_model34().to(device)
+    model = get_model100Update().to(device)
     model.load_state_dict(torch.load(path)['model_state_dict'])
     print(sum(p.numel() for p in model.parameters()))
     model.eval()
@@ -28,8 +29,8 @@ def val(path):
             false.append(label.item())
 
     print("points:", correct / total, " correct:", correct)
-    false.sort()
-    print(false)
+
+    print(Counter(false))
 
 if __name__ == "__main__":
-    val("model/exp18/exp18_58.pth")
+    val("model/exp40/exp40_60.pth")

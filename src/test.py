@@ -1,13 +1,13 @@
 import torch
 import csv
 from tqdm import tqdm
-from model import get_model, get_model100, get_model34, get_model50
+from model import get_model, get_model100, get_model34, get_model50, get_model100Update
 from dataset import get_train_dataloader, get_test_dataloader, get_val_dataloader
-from utils import loss_fn, transform_val
+from utils import  transform_val
 
 def test(path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = get_model100().to(device)
+    model = get_model100Update().to(device)
     model.load_state_dict(torch.load(path)['model_state_dict'])
     print(sum(p.numel() for p in model.parameters()))
     model.eval()
@@ -31,4 +31,4 @@ def test(path):
     print("finish test")
 
 if __name__ == "__main__":
-    test("model/exp29/exp29_68.pth")
+    test("model/exp40/exp40_60.pth")

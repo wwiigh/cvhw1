@@ -73,7 +73,7 @@ class TestDatasets(Dataset):
 
 def get_train_dataloader(imgdir, transform = None, batch_size=1, shuffle = False):
     train_dataset = TrainDatasets(imgdir, transform=transform)
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=4)
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=4,pin_memory=True)
     return train_dataloader
 
 def get_val_dataloader(imgdir, transform = None, batch_size=1, shuffle = False):
