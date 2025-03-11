@@ -1,4 +1,4 @@
-from torchvision.transforms import transforms
+from torchvision import transforms
 import torch.nn as nn
 import os
 import torch
@@ -34,7 +34,12 @@ transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
-
+transform_random = transforms.Compose([
+                    transforms.RandAugment(num_ops=2, magnitude=9),
+                    transforms.Resize((224, 224)),
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+])
 transform_val = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
@@ -57,12 +62,12 @@ class_weights = class_weights.to(device)
 class_weights = class_weights ** 0.5
 
 # 設定損失函數的權重
-alpha_ce = 0.7  # CrossEntropy 的權重
-alpha_focal = 0.3  # FocalLoss 的權重
+alpha_ce = 0.5  # CrossEntropy 的權重
+alpha_focal = 0.5  # FocalLoss 的權重
 
 # 初始化損失函數
-focal_loss_fn = FocalLoss(alpha=class_weights,gamma=1)
-ce_loss_fn = nn.CrossEntropyLoss(label_smoothing=0.1)
+focal_loss_fn = FocalLoss(alpha=class_weights,gamma=2)
+ce_loss_fn = nn.CrossEntropyLoss(label_smoothing=0.05)
 
 def combined_loss(pred, target):
     ce_loss = ce_loss_fn(pred, target)

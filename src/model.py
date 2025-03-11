@@ -85,19 +85,11 @@ class Model50(nn.Module):
         self.model = models.resnet50(weights="IMAGENET1K_V2")
         self.model.fc = nn.Identity()
         self.fc = nn.Sequential(
-            nn.Linear(2048, 1024),
-            nn.BatchNorm1d(1024),
-            nn.ReLU(),
-            #nn.Dropout(0.4),
-            nn.Linear(1024, 512),
+            nn.Linear(2048, 512),
             nn.BatchNorm1d(512),
             nn.ReLU(),
             nn.Dropout(0.4),
-            nn.Linear(512, 256),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Dropout(0.4),
-            nn.Linear(256, 100)
+            nn.Linear(512, 100),
         )
 
     def forward(self, x):

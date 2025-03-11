@@ -4,7 +4,7 @@ import torch.optim as optim
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 from dataset import get_train_dataloader, get_test_dataloader, get_val_dataloader
-from utils import combined_loss, transform, transform_val, val_loss_fn
+from utils import combined_loss, transform, transform_val, val_loss_fn, transform_random
 from model import get_model, get_model100, get_model34, get_model50, get_model100Update
 from torchvision.transforms.functional import to_tensor
 import numpy as np
@@ -25,7 +25,7 @@ def mixup_data(x, y, alpha=1.0):
     return mixed_x, mixed_y
 
 def train():
-    expdir = "exp47"
+    expdir = "exp48"
     if not os.path.exists(f"model/{expdir}"):
         os.makedirs(f"model/{expdir}")
 
@@ -37,7 +37,7 @@ def train():
     #改成128, learning rate改掉
     batch_size = 64
     epochs = 70
-    learning_rate = 0.001
+    learning_rate = 5e-4
     weight_decay=5e-4
     setp_size = 10
     T_max = 100
@@ -48,6 +48,7 @@ def train():
     testdir = "data/test"
 
     train_dataloader = get_train_dataloader(traindir, transform=transform, batch_size=batch_size, shuffle=True)
+    #train_dataloader = get_train_dataloader(traindir, transform=transform_random, batch_size=batch_size, shuffle=True)
     val_dataloader = get_val_dataloader(valdir, transform=transform_val, batch_size=1, shuffle=True)
 
     model = get_model50().to(device)
