@@ -18,7 +18,7 @@ def val(path):
     correct = 0
     total = len(val_dataloader)
     false = []
-    for (image, label, img_path) in tqdm(val_dataloader):
+    for (image, label) in tqdm(val_dataloader):
         image = image.to(device)
         
         output = model(image)
@@ -33,4 +33,4 @@ def val(path):
     print(Counter(false))
 
 if __name__ == "__main__":
-    val("model/88point/exp46_38.pth")
+    val("model/exp72/exp72_3.pth")

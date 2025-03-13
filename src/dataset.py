@@ -26,7 +26,7 @@ class TrainDatasets(Dataset):
         image = image.convert('RGB')
         if self.transform:
             image = self.transform(image)
-        return image, int(label), img_path
+        return image, int(label)
 
 class valDatasets(Dataset):
 
@@ -50,7 +50,7 @@ class valDatasets(Dataset):
         image = image.convert('RGB')
         if self.transform:
             image = self.transform(image)
-        return image, int(label), img_path
+        return image, int(label)
 
 class TestDatasets(Dataset):
 

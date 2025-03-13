@@ -5,10 +5,12 @@ from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 from dataset import get_train_dataloader, get_test_dataloader, get_val_dataloader
 from utils import combined_loss, transform, transform_val, val_loss_fn, transform_random
-from model import get_model, get_model100, get_model34, get_model50, get_model100Update
+from model import get_model, get_model100, get_model34, get_model50, get_model100Update, get_model101, get_modelNext
 from torchvision.transforms.functional import to_tensor
+from torch.optim.swa_utils import AveragedModel, SWALR
 import numpy as np
 import os
+
 
 def mixup_data(x, y, alpha=1.0):
     """Applies Mixup augmentation"""
@@ -25,7 +27,7 @@ def mixup_data(x, y, alpha=1.0):
     return mixed_x, mixed_y
 
 def train():
-    expdir = "exp48"
+    expdir = "exp81"
     if not os.path.exists(f"model/{expdir}"):
         os.makedirs(f"model/{expdir}")
 
@@ -42,51 +44,66 @@ def train():
     setp_size = 10
     T_max = 100
     gamma = 0.8
+    alpha = 0.2
+    momentum = 0.9
 
     traindir = "data/train"
     valdir = "data/val"
     testdir = "data/test"
 
+    #train_dataloader = get_train_dataloader(traindir, transform=transform, batch_size=batch_size, shuffle=True)
     train_dataloader = get_train_dataloader(traindir, transform=transform, batch_size=batch_size, shuffle=True)
-    #train_dataloader = get_train_dataloader(traindir, transform=transform_random, batch_size=batch_size, shuffle=True)
     val_dataloader = get_val_dataloader(valdir, transform=transform_val, batch_size=1, shuffle=True)
 
     model = get_model50().to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, mode="min", factor=0.5, patience=3)
-    
+    #scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs, eta_min=1e-6)
+    #optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=momentum, weight_decay=weight_decay)
+    #swa_model = AveragedModel(model)
+    #scheduler = SWALR(optimizer, anneal_strategy="cos", swa_lr=learning_rate*10)
 
     bestcorrect = 0
     for epoch in range(epochs):
+
+        #if epoch > 10: 
+        #    swa_model.update_parameters(model)
+        #    scheduler.step()
         
         runningloss = 0
         correct = 0
 
         model.train()
-        for (image, label, img_path) in tqdm(train_dataloader, desc=f"Epoch {epoch+1}/{epochs}"):
+        for (image, label) in tqdm(train_dataloader, desc=f"Epoch {epoch+1}/{epochs}"):
 
             image = image.to(device)
             label = label.to(device)
-            #image, label = mixup_data(image, label)
+            #image, label = mixup_fn(image, label)
+            #index = torch.randperm(image.size(0)).cuda()
+            #lam=np.random.beta(alpha, alpha)
+            #mixed_image = lam * image + (1-lam) * image[index, :]
+            #image, label = cutmix_or_mixup(image, label)
             optimizer.zero_grad()
             output = model(image)
             predictions = output.argmax(dim=1)
             correct += (predictions == label).sum().item()
             loss = combined_loss(output, label)
+            #loss = mixup(output, label, label[index], lam)
             loss.backward()
             optimizer.step()
 
             runningloss += loss.item()
             
 
-        print(f"Epoch [{epoch+1}/{epochs}], Loss: {runningloss/len(train_dataloader):.4f}, acc: {correct/len(train_dataloader.dataset)}")
-        writer.add_scalar("Loss/epoch", loss, epoch)
+
+        print(f"Epoch [{epoch+1}/{epochs}], Loss: {runningloss/(len(train_dataloader)):.4f}, acc: {correct/(len(train_dataloader.dataset))}")
+        writer.add_scalar("Loss/epoch", runningloss/(len(train_dataloader)), epoch)
 
         model.eval()
         valloss = 0
         correct = 0
         with torch.no_grad():
-            for (image, label, img_path) in tqdm(val_dataloader, desc="val"):
+            for (image, label) in tqdm(val_dataloader, desc="val"):
                 image = image.to(device)
 
                 output = model(image)

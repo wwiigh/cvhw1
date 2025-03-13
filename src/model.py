@@ -37,7 +37,7 @@ class Model100(nn.Module):
 class Model100UpDate(nn.Module):
     def __init__(self):
         super().__init__()
-        self.model = models.resnet18()
+        self.model = models.resnet18(weights="IMAGENET1K_V1")
         self.model.fc = nn.Identity()
         self.fc = nn.Sequential(
             nn.Linear(512, 512),
@@ -88,7 +88,37 @@ class Model50(nn.Module):
             nn.Linear(2048, 512),
             nn.BatchNorm1d(512),
             nn.ReLU(),
-            nn.Dropout(0.4),
+            nn.Dropout(0.5),
+            nn.Linear(512, 100),
+        )
+
+    def forward(self, x):
+        output = self.model(x)
+        output = self.fc(output)
+        return output
+
+class Model101(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.model = models.resnet101(weights="IMAGENET1K_V2")
+        self.model.fc = nn.Sequential(
+                        nn.Linear(2048, 100)  # 最後的全連接層，這裡假設有 1000 類別
+        )
+
+    def forward(self, x):
+        output = self.model(x)
+        return output
+    
+class ModelNext(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.model = models.resnext50_32x4d(weights="IMAGENET1K_V2")
+        self.model.fc = nn.Identity()
+        self.fc = nn.Sequential(
+            nn.Linear(2048, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(),
+            nn.Dropout(0.5),
             nn.Linear(512, 100),
         )
 
@@ -112,3 +142,10 @@ def get_model34():
 def get_model50():
     return Model50()
 
+def get_model101():
+    return Model101()
+
+def get_modelNext():
+    return ModelNext()
+
+#print(models.resnext50_32x4d(weights="IMAGENET1K_V2"))
