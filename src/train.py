@@ -27,7 +27,7 @@ def mixup_data(x, y, alpha=1.0):
     return mixed_x, mixed_y
 
 def train():
-    expdir = "exp81"
+    expdir = "exp85"
     if not os.path.exists(f"model/{expdir}"):
         os.makedirs(f"model/{expdir}")
 
@@ -52,7 +52,7 @@ def train():
     testdir = "data/test"
 
     #train_dataloader = get_train_dataloader(traindir, transform=transform, batch_size=batch_size, shuffle=True)
-    train_dataloader = get_train_dataloader(traindir, transform=transform, batch_size=batch_size, shuffle=True)
+    train_dataloader = get_train_dataloader(traindir, transform=transform_random, batch_size=batch_size, shuffle=True)
     val_dataloader = get_val_dataloader(valdir, transform=transform_val, batch_size=1, shuffle=True)
 
     model = get_model50().to(device)

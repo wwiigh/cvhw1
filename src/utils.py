@@ -17,7 +17,9 @@ class FocalLoss(nn.Module):
         return focal_loss.mean()
     
 transform = transforms.Compose([
-            transforms.RandomResizedCrop(224, scale=(0.6, 1.0)) ,
+            transforms.RandomResizedCrop(224, scale=(0.6, 1.0)),
+            #transforms.RandomApply([transforms.RandomResizedCrop(224, scale=(0.6, 1.0))], p=0.5) ,
+            #transforms.Resize((224, 224)),
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.RandomVerticalFlip(p=0.2),
             transforms.RandomApply([transforms.RandomAffine(degrees=15, translate=(0.1, 0.1), scale=(0.95, 1.05))], p=0.5),
@@ -36,10 +38,14 @@ transform = transforms.Compose([
             transforms.RandomApply([transforms.RandomErasing(p=0.5, scale=(0.02, 0.1), ratio=(0.3, 3.3), value=0)],p=0.5)
         ])
 transform_random = transforms.Compose([
-                    transforms.RandAugment(num_ops=2, magnitude=9),
+                    transforms.RandomHorizontalFlip(p=0.5),
+                    transforms.RandomVerticalFlip(p=0.2),
+                    transforms.RandAugment(num_ops=3, magnitude=12),
                     transforms.Resize((224, 224)),
                     transforms.ToTensor(),
+                    transforms.RandomErasing(p=0.5, scale=(0.02, 0.1), ratio=(0.3, 3.3), value=0),
                     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+                    
 ])
 transform_val = transforms.Compose([
             transforms.Resize((224, 224)),
