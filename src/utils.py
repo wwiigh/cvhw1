@@ -34,18 +34,20 @@ transform = transforms.Compose([
             #transforms.GaussianBlur(kernel_size=3, sigma=(0.01, 1.5)),
             
             transforms.ToTensor(),
+            transforms.RandomErasing(p=0.5, scale=(0.02, 0.1), ratio=(0.3, 3.3), value=0),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-            transforms.RandomApply([transforms.RandomErasing(p=0.5, scale=(0.02, 0.1), ratio=(0.3, 3.3), value=0)],p=0.5)
         ])
-transform_random = transforms.Compose([
-                    transforms.RandomHorizontalFlip(p=0.5),
-                    transforms.RandomVerticalFlip(p=0.2),
-                    transforms.RandAugment(num_ops=3, magnitude=12),
-                    transforms.Resize((224, 224)),
-                    transforms.ToTensor(),
-                    transforms.RandomErasing(p=0.5, scale=(0.02, 0.1), ratio=(0.3, 3.3), value=0),
-                    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-                    
+transform_random  = transforms.Compose([
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomVerticalFlip(p=0.2),
+    transforms.RandomRotation(degrees=15),
+    transforms.RandomAffine(degrees=0, translate=(0.1, 0.1), scale=(0.9, 1.1)),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+    transforms.RandAugment(num_ops=2, magnitude=10),
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.RandomErasing(p=0.3, scale=(0.02, 0.1), ratio=(0.3, 3.3), value='random'),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 transform_val = transforms.Compose([
             transforms.Resize((224, 224)),
