@@ -60,17 +60,13 @@ class Model100UpDate(nn.Module):
 class Model34(nn.Module):
     def __init__(self):
         super().__init__()
-        self.model = models.resnet34()
+        self.model = models.resnet34(weights="IMAGENET1K_V1")
         self.model.fc = nn.Identity()
         self.fc = nn.Sequential(
-            nn.Linear(512, 512),
-            nn.BatchNorm1d(512),
-            nn.ReLU(),
-            nn.Dropout(0.4),
             nn.Linear(512, 256),
             nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.Dropout(0.4),
+            nn.Dropout(0.5),
             nn.Linear(256, 100)
         )
 
@@ -87,10 +83,11 @@ class Model50(nn.Module):
         self.fc = nn.Sequential(
             nn.Linear(2048, 512),
             nn.BatchNorm1d(512),
-            nn.ReLU(),
+            nn.SiLU(),
             nn.Dropout(0.5),
             nn.Linear(512, 100),
         )
+
 
     def forward(self, x):
         output = self.model(x)
@@ -149,3 +146,4 @@ def get_modelNext():
     return ModelNext()
 
 #print(models.resnext50_32x4d(weights="IMAGENET1K_V2"))
+# print(get_model50())

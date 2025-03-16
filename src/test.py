@@ -31,4 +31,4 @@ def test(path):
     print("finish test")
 
 if __name__ == "__main__":
-    test("model/exp88/exp88_final_model.pth")
+    test("model/exp109/exp109_39_acc.pth")

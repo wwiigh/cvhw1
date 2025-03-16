@@ -33,4 +33,4 @@ def val(path):
     print(Counter(false))
 
 if __name__ == "__main__":
-    val("model/exp72/exp72_3.pth")
+    val("model/exp101/exp101_10.pth")
