@@ -27,7 +27,7 @@ def mixup_data(x, y, alpha=1.0):
     return mixed_x, mixed_y
 
 def train():
-    expdir = "exp109"
+    expdir = "exp112"
     if not os.path.exists(f"model/{expdir}"):
         os.makedirs(f"model/{expdir}")
 
@@ -38,13 +38,13 @@ def train():
 
     #改成128, learning rate改掉
     batch_size = 64
-    epochs = 70
+    epochs = 100
     learning_rate = 5e-4
     weight_decay=5e-4
     setp_size = 10
     T_max = 100
     gamma = 0.8
-    alpha = 0.4
+    alpha = 0.2
     momentum = 0.9
 
     traindir = "data/train"
