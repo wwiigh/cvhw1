@@ -19,6 +19,7 @@ If get no tensorboard error in training, please run following command
 `
 conda install -c conda-forge tensorboard
 `  
+or you can remove all SummaryWriter function  
 ### Pretained model and dataset download
 Pretained model: https://drive.google.com/file/d/1xz5ITdQQgvOm7fJItMF445Q0rcK1Idks/view?usp=sharing  
 dataset: https://drive.google.com/file/d/1fx4Z6xl5b6r4UFkBrn5l0oPEIagZxQ5u/view?usp=drive_link
