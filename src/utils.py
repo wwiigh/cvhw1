@@ -5,11 +5,6 @@ import torch.nn as nn
 import torch
 
 
-def mixup_criterion(criterion, pred, y_a, y_b, lam):
-    """Return mixup loss"""
-    return lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)
-
-
 transform = transforms.Compose([
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.RandomVerticalFlip(p=0.2),
@@ -85,14 +80,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class_weights = class_weights.to(device)
 class_weights = class_weights ** 0.5
 
-alpha_ce = 1
-ce_loss_fn = nn.CrossEntropyLoss(label_smoothing=0.1)
+loss_fn = nn.CrossEntropyLoss(label_smoothing=0.1)
 
 
-def combined_loss(pred, target):
+def entropy_loss(pred, target):
     """Return loss"""
-    ce_loss = ce_loss_fn(pred, target)
-    return alpha_ce * ce_loss
+    ce_loss = loss_fn(pred, target)
+    return ce_loss
 
 
 val_loss_fn = nn.CrossEntropyLoss()

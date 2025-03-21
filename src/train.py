@@ -6,8 +6,8 @@ from torch.utils.tensorboard import SummaryWriter
 import numpy as np
 
 from dataset import get_train_dataloader, get_val_dataloader
-from utils import combined_loss, transform_val, val_loss_fn
-from utils import transform_random, mixup_criterion
+from utils import entropy_loss, transform_val, val_loss_fn
+from utils import transform_random
 from model import get_model50
 
 
@@ -68,8 +68,8 @@ def train():
             output = model(mixed_image)
             predictions = output.argmax(dim=1)
             correct += (predictions == mixed_label).sum().item()
-            loss = mixup_criterion(combined_loss, output,
-                                   label_a, label_b, lam)
+            loss = lam * entropy_loss(output, label_a) + \
+                (1 - lam) * entropy_loss(output, label_b)
             loss.backward()
             optimizer.step()
 
