@@ -15,6 +15,10 @@ provement to the model performance.
 conda env create -f environment.yml
 `  
 If there are torch install error, please go to https://pytorch.org/get-started/locally/ to get correct torch version  
+If get no tensorboard error in training, please run following command  
+`
+conda install -c conda-forge tensorboard
+`  
 ### Pretained model and dataset download
 Pretained model: https://drive.google.com/file/d/1xz5ITdQQgvOm7fJItMF445Q0rcK1Idks/view?usp=sharing  
 dataset: https://drive.google.com/file/d/1fx4Z6xl5b6r4UFkBrn5l0oPEIagZxQ5u/view?usp=drive_link
