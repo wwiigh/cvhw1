@@ -2,4 +2,6 @@ data/
 logs/
 model/
 prediction/
+experiment/
+experimentlogs/
 hw1-data.tar.gz

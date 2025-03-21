@@ -1,6 +1,6 @@
 import torch.nn as nn
-import torch.nn.functional as F
 import torchvision.models as models
+
 
 class Model(nn.Module):
     def __init__(self):
@@ -25,7 +25,7 @@ class Model100(nn.Module):
             nn.Linear(512, 256),
             nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.Dropout(0.4), 
+            nn.Dropout(0.4),
             nn.Linear(256, 100)
         )
 
@@ -33,6 +33,7 @@ class Model100(nn.Module):
         output = self.model(x)
         output = self.fc(output)
         return output
+
 
 class Model100UpDate(nn.Module):
     def __init__(self):
@@ -75,6 +76,7 @@ class Model34(nn.Module):
         output = self.fc(output)
         return output
 
+
 class Model50(nn.Module):
     def __init__(self):
         super().__init__()
@@ -88,24 +90,12 @@ class Model50(nn.Module):
             nn.Linear(512, 100),
         )
 
-
     def forward(self, x):
         output = self.model(x)
         output = self.fc(output)
         return output
 
-class Model101(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.model = models.resnet101(weights="IMAGENET1K_V2")
-        self.model.fc = nn.Sequential(
-                        nn.Linear(2048, 100)  # 最後的全連接層，這裡假設有 1000 類別
-        )
 
-    def forward(self, x):
-        output = self.model(x)
-        return output
-    
 class ModelNext(nn.Module):
     def __init__(self):
         super().__init__()
@@ -124,26 +114,22 @@ class ModelNext(nn.Module):
         output = self.fc(output)
         return output
 
+
 def get_model():
+    """Return Model with Resnet18"""
     return Model()
 
-def get_model100():
-    return Model100()
-
-def get_model100Update():
-    return Model100UpDate()
 
 def get_model34():
+    """Return Model with Resnet34"""
     return Model34()
 
+
 def get_model50():
+    """Return Model with Resnet50"""
     return Model50()
 
-def get_model101():
-    return Model101()
 
-def get_modelNext():
+def get_model_next():
+    """Return Model with Resnext50"""
     return ModelNext()
-
-#print(models.resnext50_32x4d(weights="IMAGENET1K_V2"))
-# print(get_model50())
