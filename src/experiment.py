@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from dataset import get_train_dataloader, get_val_dataloader
 from utils import entropy_loss, transform_val, val_loss_fn
-from utils import transform_random, mixup_criterion
+from utils import transform_random
 from model import get_model50
 
 
